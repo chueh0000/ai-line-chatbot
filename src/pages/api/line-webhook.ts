@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import * as line from '@line/bot-sdk'
 
 // create LINE SDK config from env variables
-const config = {
+const config_line = {
   channelSecret: process.env.LINE_CHANNEL_SECRET!,
 }
 
@@ -12,7 +12,7 @@ const client = new line.messagingApi.MessagingApiClient({
 });
 
 // This disables the default body parser so LINE can verify the signature
-export const configApi = {
+export const config = {
   api: {
     bodyParser: false,
   },
@@ -25,7 +25,7 @@ const runMiddleware = (
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     // It might be necessary to cast to 'any' here due to the middleware's internal type expectations
-    line.middleware(config)(req, res, (result: unknown) =>
+    line.middleware(config_line)(req, res, (result: unknown) =>
       result instanceof Error ? reject(result) : resolve()
     )
   })
@@ -48,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const userId = event.source.userId
         const userMessage = event.message.text
 
-				// TODO: You can handle commands here (e.g. /summary, /chart, etc.)
+        // TODO: You can handle commands here (e.g. /summary, /chart, etc.)
 
         const replyText = `👋 Hello! You said: "${userMessage}". Your user ID is ${userId}.`
 
@@ -69,3 +69,67 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).send('Internal Server Error')
   }
 }
+
+
+
+// using raw data instead of middleware
+
+/* 
+import type { NextApiRequest, NextApiResponse } from 'next'
+import * as line from '@line/bot-sdk'
+import getRawBody from 'raw-body'
+
+const config_line = {
+  channelSecret: process.env.LINE_CHANNEL_SECRET!,
+}
+
+const client = new line.messagingApi.MessagingApiClient({
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN!,
+})
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') return res.status(405).end()
+
+  try {
+    const rawBody = await getRawBody(req)
+    const signature = req.headers['x-line-signature'] as string
+
+    // Verify signature
+    const isValid = line.validateSignature(rawBody, config_line.channelSecret, signature)
+    if (!isValid) {
+      console.error('❌ Signature validation failed')
+      return res.status(401).send('Invalid signature')
+    }
+
+    // Parse body manually
+    const body = JSON.parse(rawBody.toString()) as line.WebhookRequestBody
+
+    const events = body.events
+    const promises = events.map(async (event: line.WebhookEvent) => {
+      if (event.type === 'message' && event.message?.type === 'text') {
+        const userId = event.source.userId
+        const userMessage = event.message.text
+
+        const replyText = `👋 Hello! You said: "${userMessage}". Your user ID is ${userId}.`
+
+        await client.replyMessage({
+          replyToken: event.replyToken!,
+          messages: [{ type: 'text', text: replyText }],
+        })
+      }
+    })
+
+    await Promise.all(promises)
+    res.status(200).end()
+  } catch (err) {
+    console.error('LINE webhook error:', err)
+    res.status(500).send('Internal Server Error')
+  }
+}
+*/
