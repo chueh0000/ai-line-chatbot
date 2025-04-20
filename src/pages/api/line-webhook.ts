@@ -25,7 +25,7 @@ const runMiddleware = (
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     // It might be necessary to cast to 'any' here due to the middleware's internal type expectations
-    line.middleware(config)(req as any, res as any, (result: unknown) =>
+    line.middleware(config)(req, res, (result: unknown) =>
       result instanceof Error ? reject(result) : resolve()
     )
   })
@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const userMessage = event.message.text
 
 				// TODO: You can handle commands here (e.g. /summary, /chart, etc.)
-				
+
         const replyText = `👋 Hello! You said: "${userMessage}". Your user ID is ${userId}.`
 
         await client.replyMessage({
