@@ -50,6 +50,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // TODO: You can handle commands here (e.g. /summary, /chart, etc.)
 
+        if (userMessage === '填寫照護表單') {
+          // 呼叫 /api/customTask，讓它幫忙推送 Flex Message
+          await fetch(`${process.env.BASE_URL}/api/customTask`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, action: 'showForm' })
+          })
+      
+          return
+        }
+
         const replyText = `👋 Hello! You said: "${userMessage}". Your user ID is ${userId}.`
 
         await client.replyMessage({

@@ -1,67 +1,111 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自定義任務清單</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>自定義任務清單</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-6 text-center">自定義任務清單</h2>
-        <form id="residentForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLScFTsEtkG7NZFZgYpiB34ib45ANjJlfoqydHlgDntpNn4H0sg/formResponse" method="POST" class="space-y-4">
-            <div>
-                <label for="familyName" class="block text-sm font-medium text-gray-700">住民家屬大名 <span class="text-red-500">*</span></label>
-                <input type="text" id="familyName" name="entry.291276545" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </div>
-            <div>
-                <label for="remarks" class="block text-sm font-medium text-gray-700">住民需要照服員特別照顧的事項 <span class="text-red-500">*</span></label>
-                <textarea id="remarks" name="entry.2132221723" required rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-            </div>
-            <div>
-                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">提交</button>
-            </div>
-        </form>
-    </div>
-    <script>
-        // 初始化 LIFF
-        liff.init({ liffId: '2007331480-eR0n36px' })
-            .then(() => {
-                if (!liff.isLoggedIn()) {
-                    liff.login(); // 如果尚未登入，導向 LINE 登入
-                } else {
-                    // 取得使用者資訊並自動填入名稱
-                    liff.getProfile().then(profile => {
-                        document.getElementById('familyName').value = profile.displayName;
-                    }).catch(err => {
-                        console.error('無法取得 LINE 使用者資訊:', err);
-                    });
-                }
-            })
-            .catch(err => {
-                console.error('LIFF 初始化失敗:', err);
-                alert('LIFF 初始化失敗，請稍後再試。');
-            });
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center">自定義任務清單</h2>
+    <form
+      id="residentForm"
+      action="https://docs.google.com/forms/u/0/d/e/1FAIpQLScFTsEtkG7NZFZgYpiB34ib45ANjJlfoqydHlgDntpNn4H0sg/formResponse"
+      method="POST"
+      class="space-y-4"
+    >
+      <div>
+        <label for="familyName" class="block text-sm font-medium text-gray-700">
+          住民家屬大名 <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="familyName"
+          name="entry.291276545"
+          required
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label for="remarks" class="block text-sm font-medium text-gray-700">
+          住民需要照服員特別照顧的事項 <span class="text-red-500">*</span>
+        </label>
+        <textarea
+          id="remarks"
+          name="entry.2132221723"
+          required
+          rows="4"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        ></textarea>
+      </div>
+      <div>
+        <button
+          type="submit"
+          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          提交
+        </button>
+      </div>
+    </form>
+  </div>
 
-        // 表單提交處理
-        const form = document.getElementById('residentForm');
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const formData = new FormData(form);
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    mode: 'no-cors'
-                });
-                alert('表單已提交(`・ω・´) 該任務會火速通知給照服員！');
-                form.reset();
-            } catch (error) {
-                console.error('提交失敗:', error);
-                alert('表單提交失敗 Σ(°Д°;) 請稍後再試～');
-            }
+  <script>
+    // 初始化 LIFF
+    liff.init({ liffId: '2007366843-1697Mv0k' })
+      .then(() => {
+        if (!liff.isLoggedIn()) {
+          liff.login();
+        } else {
+          liff.getProfile().then(profile => {
+            document.getElementById('familyName').value = profile.displayName;
+            document.getElementById('residentForm').dataset.userId = profile.userId;
+          }).catch(err => {
+            console.error('無法取得 LINE 使用者資訊:', err);
+          });
+        }
+      })
+      .catch(err => {
+        console.error('LIFF 初始化失敗:', err);
+        alert('LIFF 初始化失敗，請稍後再試。');
+      });
+
+    // 表單提交處理
+    const form = document.getElementById('residentForm');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      // 1. 提交至 Google 表單
+      const formData = new FormData(form);
+      try {
+        await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          mode: 'no-cors'
         });
-    </script>
+      } catch (error) {
+        console.error('提交 Google 表單失敗:', error);
+      }
+
+      // 2. 推送 LINE 通知
+      const userId = form.dataset.userId;
+      const name = document.getElementById('familyName').value;
+      const remarks = document.getElementById('remarks').value;
+
+      try {
+        await fetch('/api/customTask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, name, remarks })
+        });
+      } catch (error) {
+        console.error('推送 LINE 通知失敗:', error);
+      }
+
+      alert('表單已提交(`・ω・´) 該任務會火速通知給照服員！');
+      form.reset();
+    });
+  </script>
 </body>
 </html>
