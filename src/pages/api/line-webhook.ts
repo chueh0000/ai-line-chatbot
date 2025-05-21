@@ -57,6 +57,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
           // TODO: You can handle commands here (e.g. /summary, /chart, etc.)
 
+          if (command === '註冊') {
+            if (!args[0] || !args[1] || !args[2]) {
+              await client.replyMessage({
+                replyToken: event.replyToken!,
+                messages: [{
+                  type: 'text',
+                  text: '請提供完整的註冊資訊：/註冊 關係 姓名 住民姓名',
+                }],
+              })
+              return
+            }
+            replyText = `${args[1]} 您好～ 已註冊成功！您是 ${args[2]} 的 ${args[0]}，您的 ID 是 ${userId}`
+          }
+
           if (command === '照護紀錄') {
             await client.replyMessage({
               replyToken: event.replyToken!,
@@ -281,7 +295,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
 
           // Unknown command
-          replyText = "請重試"
+          // replyText = "請重試"
         }
 
         await client.replyMessage({
