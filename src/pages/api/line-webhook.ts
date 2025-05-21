@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import * as line from '@line/bot-sdk'
+import { getUserDataFromSheets, notifyStaff } from '@/lib/googleSheets'
 
 // create LINE SDK config from env variables
 const config_line = {
@@ -57,11 +58,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, action: 'showForm' })
           })
-      
+          
           return
         }
+        
+        
+        let replyText = `👋 Hello! You said: "${userMessage}". Your user ID is ${userId}.`
+        
+        if (userMessage === '資料') {
+          replyText = await getUserDataFromSheets(userId)
+        }
+        
+        
+        if (userMessage === '通知照服員') {
+          replyText = await notifyStaff(userId)
+        }
 
-        const replyText = `👋 Hello! You said: "${userMessage}". Your user ID is ${userId}.`
 
         await client.replyMessage({
           replyToken: event.replyToken!, // Add a non-null assertion as replyToken should always exist for message events

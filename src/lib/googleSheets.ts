@@ -1,5 +1,4 @@
 import { google } from 'googleapis'
-import type { NextApiRequest, NextApiResponse } from 'next'
 import * as line from '@line/bot-sdk'
 
 const client = new line.messagingApi.MessagingApiClient({

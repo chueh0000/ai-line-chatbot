@@ -17,8 +17,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const result = await fetchResidentDataWithTrend(id, date)
     res.status(200).json(result)
-  } catch (err: any) {
-    console.error('Google Sheets Error:', err.message)
-    res.status(500).json({ error: err.message })
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error('Google Sheets Error:', err.message)
+      res.status(500).json({ error: err.message })
+    } else {
+      console.error('Unknown Error:', err)
+      res.status(500).json({ error: 'An unknown error occurred' })
+    }
   }
 }

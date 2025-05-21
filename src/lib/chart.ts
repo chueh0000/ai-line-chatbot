@@ -1,3 +1,4 @@
+import { TrendData } from '@/pages/resident/[id]'
 import {
   Chart as ChartJS,
   LineElement,
@@ -29,7 +30,7 @@ function formatDate(dateStr: string) {
   return `${mm}/${dd}`
 }
 
-export function getChartGroup1(trend: any[]): {
+export function getChartGroup1(trend: TrendData[]): {
   data: ChartData<'line'>
   options: ChartOptions<'line'>
 } {
@@ -41,21 +42,21 @@ export function getChartGroup1(trend: any[]): {
       datasets: [
         {
           label: '體溫 (°C)',
-          data: sorted.map(d => d.temperature),
+          data: sorted.map(d => d.temperature || 0),
           borderColor: 'rgb(255, 99, 132)',
           fill: false,
           tension: 0.3,
         },
         {
           label: '血氧 (%)',
-          data: sorted.map(d => d.spo2),
+          data: sorted.map(d => d.spo2 || 0),
           borderColor: 'rgb(75, 192, 192)',
           fill: false,
           tension: 0.3,
         },
         {
           label: '呼吸 (次/分)',
-          data: sorted.map(d => d.respiration),
+          data: sorted.map(d => d.respiration || 0),
           borderColor: 'rgb(153, 102, 255)',
           fill: false,
           tension: 0.3,
@@ -78,7 +79,7 @@ export function getChartGroup1(trend: any[]): {
   }
 }
 
-export function getChartGroup2(trend: any[]): {
+export function getChartGroup2(trend: TrendData[]): {
   data: ChartData<'line'>
   options: ChartOptions<'line'>
 } {
@@ -90,28 +91,28 @@ export function getChartGroup2(trend: any[]): {
       datasets: [
         {
           label: '收縮壓 (mmHg)',
-          data: sorted.map(d => d.systolic),
+          data: sorted.map(d => d.systolic || 0),
           borderColor: 'rgb(255, 159, 64)',
           fill: false,
           tension: 0.3,
         },
         {
           label: '舒張壓 (mmHg)',
-          data: sorted.map(d => d.diastolic),
+          data: sorted.map(d => d.diastolic || 0),
           borderColor: 'rgb(255, 205, 86)',
           fill: false,
           tension: 0.3,
         },
         {
           label: '血糖 (mg/dL)',
-          data: sorted.map(d => d.bloodSugar),
+          data: sorted.map(d => d.bloodSugar || 0),
           borderColor: 'rgb(201, 203, 207)',
           fill: false,
           tension: 0.3,
         },
         {
           label: '脈搏 (次/分)',
-          data: sorted.map(d => d.pulse),
+          data: sorted.map(d => d.pulse || 0),
           borderColor: 'rgb(54, 162, 235)',
           fill: false,
           tension: 0.3,

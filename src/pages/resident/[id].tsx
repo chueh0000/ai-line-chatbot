@@ -5,14 +5,36 @@ import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS } from 'chart.js'
 import { getChartGroup1, getChartGroup2 } from '@/lib/chart'
 
+interface DayData {
+  temperature?: number
+  spo2?: number
+  respiration?: number
+  systolic?: number
+  diastolic?: number
+  bloodSugar?: number
+  pulse?: number
+}
+
+export interface TrendData {
+  date: string;
+  temperature?: number;
+  spo2?: number;
+  respiration?: number;
+  systolic?: number;
+  diastolic?: number;
+  bloodSugar?: number;
+  pulse?: number;
+}
+
+
 export default function ResidentPage() {
   const router = useRouter()
   const { id } = router.query
 
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [name, setName] = useState<string | null>(null)
-  const [dayData, setDayData] = useState<any | null>(null)
-  const [trend, setTrend] = useState<any[] | null>(null)
+  const [dayData, setDayData] = useState<DayData | null>(null)
+  const [trend, setTrend] = useState<TrendData[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const chart1Ref = useRef<ChartJS<'line'> | null>(null)
