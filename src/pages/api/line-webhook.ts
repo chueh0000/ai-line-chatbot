@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import * as line from '@line/bot-sdk'
+import { parseCommand } from '@/utils/commandParser'
 import { getUserDataFromSheets, notifyStaff } from '@/lib/googleSheets'
 
 // create LINE SDK config from env variables
@@ -48,32 +49,240 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (event.type === 'message' && event.message?.type === 'text') {
         const userId = event.source.userId
         const userMessage = event.message.text
+        const parsed = parseCommand(userMessage)
+        let replyText = `👋 嗨! 您的 ID 是 ${userId}`
 
-        // TODO: You can handle commands here (e.g. /summary, /chart, etc.)
+        if (parsed) {
+          const { command, args } = parsed
 
-        if (userMessage === '填寫照護表單') {
-          // 呼叫 /api/customTask，讓它幫忙推送 Flex Message
-          await fetch(`${process.env.BASE_URL}/api/customTask`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, action: 'showForm' })
-          })
-          
-          return
-        }
-        
-        
-        let replyText = `👋 Hello! You said: "${userMessage}". Your user ID is ${userId}.`
-        
-        if (userMessage === '資料') {
-          replyText = await getUserDataFromSheets(userId)
-        }
-        
-        
-        if (userMessage === '通知照服員') {
-          replyText = await notifyStaff(userId)
-        }
+          // TODO: You can handle commands here (e.g. /summary, /chart, etc.)
 
+          if (command === '照護紀錄') {
+            await client.replyMessage({
+              replyToken: event.replyToken!,
+              messages: [
+                {
+                  type: 'flex',
+                  altText: '點此查看詳細照護紀錄',
+                  contents: {
+                    type: 'bubble',
+                    size: 'mega',
+                    body: {
+                      type: 'box',
+                      layout: 'vertical',
+                      spacing: 'md',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '2025/05/23・照護紀錄摘要',
+                          size: 'sm',
+                          color: '#888888',
+                        },
+                        {
+                          type: 'box',
+                          layout: 'horizontal',
+                          spacing: 'sm',
+                          contents: [
+                            {
+                              type: 'image',
+                              url: 'https://stickershop.line-scdn.net/stickershop/v1/product/25219285/LINEStorePC/main.png?v=1', // 替換為實際住民頭像
+                              size: 'xs',
+                              aspectMode: 'cover',
+                              aspectRatio: '1:1',
+                            },
+                            {
+                              type: 'box',
+                              layout: 'vertical',
+                              contents: [
+                                {
+                                  type: 'text',
+                                  text: '陳爺爺',
+                                  weight: 'bold',
+                                  size: 'md'
+                                },
+                                {
+                                  type: 'text',
+                                  text: '午睡充足，進食八分，無不適感。',
+                                  size: 'sm',
+                                  wrap: true,
+                                  color: '#666666'
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'box',
+                          layout: 'horizontal',
+                          spacing: 'sm',
+                          contents: [
+                            {
+                              type: 'box',
+                              layout: 'vertical',
+                              contents: [
+                                {
+                                  type: 'text',
+                                  text: '體溫',
+                                  size: 'xs',
+                                  color: '#888888'
+                                },
+                                {
+                                  type: 'text',
+                                  text: '36.4 ℃',
+                                  weight: 'bold',
+                                  size: 'md',
+                                  color: '#D94D4D'
+                                }
+                              ]
+                            },
+                            {
+                              type: 'box',
+                              layout: 'vertical',
+                              contents: [
+                                {
+                                  type: 'text',
+                                  text: '血壓',
+                                  size: 'xs',
+                                  color: '#888888'
+                                },
+                                {
+                                  type: 'text',
+                                  text: '120/80',
+                                  weight: 'bold',
+                                  size: 'md',
+                                  color: '#D94D4D'
+                                }
+                              ]
+                            },
+                            {
+                              type: 'box',
+                              layout: 'vertical',
+                              contents: [
+                                {
+                                  type: 'text',
+                                  text: '血氧',
+                                  size: 'xs',
+                                  color: '#888888'
+                                },
+                                {
+                                  type: 'text',
+                                  text: '96%',
+                                  weight: 'bold',
+                                  size: 'md',
+                                  color: '#D94D4D'
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'box',
+                          layout: 'horizontal',
+                          contents: [
+                            {
+                              type: 'text',
+                              text: '😌 情緒狀態：平穩',
+                              size: 'sm',
+                              color: '#AA1D4E'
+                            }
+                          ]
+                        },
+                        {
+                          type: 'box',
+                          layout: 'horizontal',
+                          contents: [
+                            {
+                              type: 'text',
+                              text: '🍽 飲食狀況：正常進食',
+                              size: 'sm',
+                              color: '#AA1D4E'
+                            }
+                          ]
+                        },
+                        {
+                          type: 'box',
+                          layout: 'horizontal',
+                          contents: [
+                            {
+                              type: 'text',
+                              text: '🌙 睡眠狀況：淺眠易醒',
+                              size: 'sm',
+                              color: '#AA1D4E'
+                            }
+                          ]
+                        },
+                        {
+                          type: 'box',
+                          layout: 'horizontal',
+                          contents: [
+                            {
+                              type: 'text',
+                              text: '🩺 就醫紀錄：無',
+                              size: 'sm',
+                              color: '#666666'
+                            }
+                          ]
+                        },
+                        {
+                          type: 'box',
+                          layout: 'horizontal',
+                          contents: [
+                            {
+                              type: 'text',
+                              text: '🎨 活動紀錄：園藝課',
+                              size: 'sm',
+                              color: '#666666'
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    footer: {
+                      type: 'box',
+                      layout: 'vertical',
+                      contents: [
+                        {
+                          type: 'button',
+                          style: 'primary',
+                          color: '#D94D4D',
+                          action: {
+                            type: 'uri',
+                            label: '查看詳細照護數據',
+                            uri: process.env.BASE_URL + '/resident/12345'
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            })
+            return
+          }
+
+          if (command === '填寫照護表單') {
+            // 呼叫 /api/customTask，讓它幫忙推送 Flex Message
+            await fetch(`${process.env.BASE_URL}/api/customTask`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId, action: 'showForm' })
+            })
+            return
+          }
+
+
+          if (userMessage === '資料') {
+            replyText = await getUserDataFromSheets(userId)
+          }
+
+
+          if (userMessage === '通知照服員') {
+            replyText = await notifyStaff(userId)
+          }
+
+          // Unknown command
+          replyText = "請重試"
+        }
 
         await client.replyMessage({
           replyToken: event.replyToken!, // Add a non-null assertion as replyToken should always exist for message events
