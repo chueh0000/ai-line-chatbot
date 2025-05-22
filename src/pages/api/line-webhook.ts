@@ -73,7 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
 
           if (command === '照護紀錄') {
-            let message: line.FlexMessage = buildFlexMessage(
+            const message: line.FlexMessage = buildFlexMessage(
                 '點此查看詳細照護紀錄',
                 buildResidentBubble({
                   id: '12345',
@@ -93,12 +93,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               );
             await client.replyMessage({
               replyToken: event.replyToken!,
-              messages: [message as any],
+              messages: [message as line.messagingApi.Message],
             })
             return
           }
 
-          if (command === '填寫照護表單') {
+          if (command === '個別化照護需求' || command === '自定義照護任務') {
             // 呼叫 /api/customTask，讓它幫忙推送 Flex Message
             await fetch(`${process.env.BASE_URL}/api/customTask`, {
               method: 'POST',

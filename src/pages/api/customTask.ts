@@ -21,12 +21,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         messages: [
           {
             type: 'flex',
-            altText: '點此填寫照護任務表單',
+            altText: '點此填寫個別化照護需求表單',
             contents: {
               type: 'bubble',
               hero: {
                 type: 'image',
-                url: 'https://atmarksol.jp/wp-content/uploads/2023/08/liff-1.jpg',
+                url: 'https://i.ibb.co/b5xXZk0b/Chat-GPT-Image-May-23-2025-12-15-26-AM.png',
                 size: 'full',
                 aspectRatio: '20:13',
                 aspectMode: 'cover'
@@ -37,13 +37,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 contents: [
                   {
                     type: 'text',
-                    text: '照護任務表單',
+                    text: '個別化照護需求表單',
                     weight: 'bold',
                     size: 'xl'
                   },
                   {
                     type: 'text',
-                    text: '請協助填寫住民需求，我們會即時通知照服員。',
+                    text: '如您有進一步細緻化/個別化照護需求，請填答下列資訊以完成表單。',
                     size: 'sm',
                     wrap: true,
                     margin: 'md'
@@ -74,13 +74,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // 表單填寫完畢通知
-    if (name && remarks) {
+    if (name) {
       await client.pushMessage({
         to: userId,
         messages: [
           {
             type: 'text',
-            text: `📥 已收到一份照護任務：\n👤 姓名：${name}\n📌 備註：${remarks}`
+            text: `親愛的家屬您好：\n我們已收到您於近日提出針對長輩「協助飲食/補充營養品」的需求。
+照護團隊將從今天開始，每日晚餐時間協助陳爺爺補充營養品，並持續觀察爺爺的胃口是否有好轉情形，請您不必太過擔心。謝謝您，祝您順心！`
           }
         ]
       })

@@ -1,50 +1,98 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>自定義任務清單</title>
+  <title>個別化照護需求表單</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-    <h2 class="text-2xl font-bold mb-6 text-center">自定義任務清單</h2>
-    <form
-      id="residentForm"
+
+<body class="bg-gray-100 py-10 px-4">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold mb-4 text-center">個別化照護需求表單</h1>
+    <p class="text-gray-700 mb-6 text-sm leading-relaxed">
+      親愛的家屬您好：<br><br>
+      邀請您先詳閱長輩本周照護紀錄、健康趨勢，以了解長輩就近一周內的生理、飲食與用藥狀況。（點擊選單「照護紀錄」進行查閱）<br><br>
+      若您在閱覽後，有進一步想提出的細緻化/個別化照護需求（如定時擦藥、補充營養品等），歡迎填寫下列表單。照護團隊將於兩個工作天內進行評估並回覆，與您協力打造更貼近需求的照護服務。
+    </p>
+
+    <form id="careForm"
       action="https://docs.google.com/forms/u/0/d/e/1FAIpQLScFTsEtkG7NZFZgYpiB34ib45ANjJlfoqydHlgDntpNn4H0sg/formResponse"
-      method="POST"
-      class="space-y-4"
-    >
+      method="POST" class="space-y-4">
+      <!-- 使用者名稱 -->
       <div>
         <label for="familyName" class="block text-sm font-medium text-gray-700">
-          住民家屬大名 <span class="text-red-500">*</span>
+          家屬大名 <span class="text-red-500">*</span>
         </label>
-        <input
-          type="text"
-          id="familyName"
-          name="entry.291276545"
-          required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
+        <input type="text" id="familyName" name="entry.291276545" required
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
       </div>
+
+      <!-- 照護類型選擇 -->
       <div>
-        <label for="remarks" class="block text-sm font-medium text-gray-700">
-          住民需要照服員特別照顧的事項 <span class="text-red-500">*</span>
+        <label class="block text-sm font-medium text-gray-700">
+          請選擇您的照護需求類型（每份表單限選一項） <span class="text-red-500">*</span>
         </label>
-        <textarea
-          id="remarks"
-          name="entry.2132221723"
-          required
-          rows="4"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        ></textarea>
+        <select id="careTypeSelect" name="entry.291276545" required onchange="toggleOtherCareType(this)"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+          <option value="">請選擇</option>
+          <option value="服裝配備">服裝配備</option>
+          <option value="協助飲食/補充營養品">協助飲食/補充營養品</option>
+          <option value="協助塗抹乳液">協助塗抹乳液</option>
+          <option value="協助（提醒）如廁">協助（提醒）如廁</option>
+          <option value="其他">其他</option>
+        </select>
+
+        <!-- 補充欄位：其他 -->
+        <div id="otherCareTypeWrapper" class="mt-2 hidden">
+          <input type="text" name="entry.291276545" placeholder="請輸入您的其他照護需求類型"
+            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm" />
+        </div>
       </div>
+
+
+      <!-- 背景與目的 -->
       <div>
-        <button
-          type="submit"
-          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
+        <label for="background" class="block text-sm font-medium text-gray-700">
+          請清楚說明此項照護需求的背景與目的 <span class="text-red-500">*</span>
+        </label>
+        <textarea id="background" name="entry.1720209048" required rows="4"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
+      </div>
+
+      <!-- 執行時段 -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">
+          您期待該需求執行的時段？ <span class="text-red-500">*</span>
+        </label>
+        <div class="mt-1 space-y-1">
+          <label class="flex items-center">
+            <input type="checkbox" name="entry.773796933[]" value="上午" class="mr-2" /> 上午
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" name="entry.773796933[]" value="下午" class="mr-2" /> 下午
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" name="entry.773796933[]" value="晚上" class="mr-2" /> 晚上
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" id="otherCheckbox" value="其他" class="mr-2" onchange="toggleOtherTimeInput(this)" />
+            其他
+          </label>
+          <!-- 其他說明輸入欄位（預設隱藏） -->
+          <div id="otherTimeWrapper" class="ml-6 mt-1 hidden">
+            <input type="text" name="entry.773796933[]" placeholder="請輸入具體時段，例如：每日下午3點"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm" />
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 提交按鈕 -->
+      <div>
+        <button type="submit" class="w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
           提交
         </button>
       </div>
@@ -60,7 +108,7 @@
         } else {
           liff.getProfile().then(profile => {
             document.getElementById('familyName').value = profile.displayName;
-            document.getElementById('residentForm').dataset.userId = profile.userId;
+            document.getElementById('careForm').dataset.userId = profile.userId;
           }).catch(err => {
             console.error('無法取得 LINE 使用者資訊:', err);
           });
@@ -71,12 +119,11 @@
         alert('LIFF 初始化失敗，請稍後再試。');
       });
 
-    // 表單提交處理
-    const form = document.getElementById('residentForm');
+    // 表單提交行為
+    const form = document.getElementById('careForm');
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
-      // 1. 提交至 Google 表單
       const formData = new FormData(form);
       try {
         await fetch(form.action, {
@@ -88,24 +135,39 @@
         console.error('提交 Google 表單失敗:', error);
       }
 
-      // 2. 推送 LINE 通知
       const userId = form.dataset.userId;
       const name = document.getElementById('familyName').value;
-      const remarks = document.getElementById('remarks').value;
 
       try {
         await fetch('/api/customTask', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, name, remarks })
+          body: JSON.stringify({ userId, name })
         });
       } catch (error) {
         console.error('推送 LINE 通知失敗:', error);
       }
 
-      alert('表單已提交(`・ω・´) 該任務會火速通知給照服員！');
+      alert('表單已提交，照護團隊將盡快與您聯繫。');
       form.reset();
     });
+
+    function toggleOtherCareType(select) {
+      const otherInput = document.getElementById('otherCareTypeWrapper');
+      if (select.value === '其他') {
+        otherInput.classList.remove('hidden');
+        select.name = ''; // 避免兩個相同 name 的欄位都被送出
+      } else {
+        otherInput.classList.add('hidden');
+        select.name = 'entry.291276545';
+      }
+    }
+    function toggleOtherTimeInput(checkbox) {
+      const otherInput = document.getElementById('otherTimeWrapper');
+      otherInput.classList.toggle('hidden', !checkbox.checked);
+    }
+
   </script>
 </body>
+
 </html>
