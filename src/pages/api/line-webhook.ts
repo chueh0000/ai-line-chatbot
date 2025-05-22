@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import * as line from '@line/bot-sdk'
 import { parseCommand } from '@/utils/commandParser'
 import { getUserDataFromSheets, notifyStaff } from '@/lib/googleSheets'
+import { buildFlexMessage, buildResidentBubble } from '@/lib/flexBuilder'
 
 // create LINE SDK config from env variables
 const config_line = {
@@ -72,204 +73,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
 
           if (command === '照護紀錄') {
+            let message: line.FlexMessage = buildFlexMessage(
+                '點此查看詳細照護紀錄',
+                buildResidentBubble({
+                  id: '12345',
+                  date: '2025-05-23',
+                  imageUrl: 'https://stickershop.line-scdn.net/stickershop/v1/product/25219285/LINEStorePC/main.png?v=1',
+                  name: '陳爺爺',
+                  summary: '午睡充足，進食八分，無不適感。',
+                  temperature: '36.5°C',
+                  bloodPressure: '120/80',
+                  bloodOxygen: '98%',
+                  mood: '平穩',
+                  food: '正常進食',
+                  sleep: '淺眠易醒',
+                  medicalRecord: '無',
+                  activity: '園藝課',
+                })
+              );
             await client.replyMessage({
               replyToken: event.replyToken!,
-              messages: [
-                {
-                  type: 'flex',
-                  altText: '點此查看詳細照護紀錄',
-                  contents: {
-                    type: 'bubble',
-                    size: 'mega',
-                    body: {
-                      type: 'box',
-                      layout: 'vertical',
-                      spacing: 'md',
-                      contents: [
-                        {
-                          type: 'text',
-                          text: '2025/05/23・照護紀錄摘要',
-                          size: 'sm',
-                          color: '#888888',
-                        },
-                        {
-                          type: 'box',
-                          layout: 'horizontal',
-                          spacing: 'sm',
-                          contents: [
-                            {
-                              type: 'image',
-                              url: 'https://stickershop.line-scdn.net/stickershop/v1/product/25219285/LINEStorePC/main.png?v=1', // 替換為實際住民頭像
-                              size: 'xs',
-                              aspectMode: 'cover',
-                              aspectRatio: '1:1',
-                            },
-                            {
-                              type: 'box',
-                              layout: 'vertical',
-                              contents: [
-                                {
-                                  type: 'text',
-                                  text: '陳爺爺',
-                                  weight: 'bold',
-                                  size: 'md'
-                                },
-                                {
-                                  type: 'text',
-                                  text: '午睡充足，進食八分，無不適感。',
-                                  size: 'sm',
-                                  wrap: true,
-                                  color: '#666666'
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          type: 'box',
-                          layout: 'horizontal',
-                          spacing: 'sm',
-                          contents: [
-                            {
-                              type: 'box',
-                              layout: 'vertical',
-                              contents: [
-                                {
-                                  type: 'text',
-                                  text: '體溫',
-                                  size: 'xs',
-                                  color: '#888888'
-                                },
-                                {
-                                  type: 'text',
-                                  text: '36.4 ℃',
-                                  weight: 'bold',
-                                  size: 'md',
-                                  color: '#D94D4D'
-                                }
-                              ]
-                            },
-                            {
-                              type: 'box',
-                              layout: 'vertical',
-                              contents: [
-                                {
-                                  type: 'text',
-                                  text: '血壓',
-                                  size: 'xs',
-                                  color: '#888888'
-                                },
-                                {
-                                  type: 'text',
-                                  text: '120/80',
-                                  weight: 'bold',
-                                  size: 'md',
-                                  color: '#D94D4D'
-                                }
-                              ]
-                            },
-                            {
-                              type: 'box',
-                              layout: 'vertical',
-                              contents: [
-                                {
-                                  type: 'text',
-                                  text: '血氧',
-                                  size: 'xs',
-                                  color: '#888888'
-                                },
-                                {
-                                  type: 'text',
-                                  text: '96%',
-                                  weight: 'bold',
-                                  size: 'md',
-                                  color: '#D94D4D'
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          type: 'box',
-                          layout: 'horizontal',
-                          contents: [
-                            {
-                              type: 'text',
-                              text: '😌 情緒狀態：平穩',
-                              size: 'sm',
-                              color: '#AA1D4E'
-                            }
-                          ]
-                        },
-                        {
-                          type: 'box',
-                          layout: 'horizontal',
-                          contents: [
-                            {
-                              type: 'text',
-                              text: '🍽 飲食狀況：正常進食',
-                              size: 'sm',
-                              color: '#AA1D4E'
-                            }
-                          ]
-                        },
-                        {
-                          type: 'box',
-                          layout: 'horizontal',
-                          contents: [
-                            {
-                              type: 'text',
-                              text: '🌙 睡眠狀況：淺眠易醒',
-                              size: 'sm',
-                              color: '#AA1D4E'
-                            }
-                          ]
-                        },
-                        {
-                          type: 'box',
-                          layout: 'horizontal',
-                          contents: [
-                            {
-                              type: 'text',
-                              text: '🩺 就醫紀錄：無',
-                              size: 'sm',
-                              color: '#666666'
-                            }
-                          ]
-                        },
-                        {
-                          type: 'box',
-                          layout: 'horizontal',
-                          contents: [
-                            {
-                              type: 'text',
-                              text: '🎨 活動紀錄：園藝課',
-                              size: 'sm',
-                              color: '#666666'
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    footer: {
-                      type: 'box',
-                      layout: 'vertical',
-                      contents: [
-                        {
-                          type: 'button',
-                          style: 'primary',
-                          color: '#D94D4D',
-                          action: {
-                            type: 'uri',
-                            label: '查看詳細照護數據',
-                            uri: process.env.BASE_URL + '/resident/12345'
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]
+              messages: [message as any],
             })
             return
           }
@@ -293,9 +117,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           if (userMessage === '通知照服員') {
             replyText = await notifyStaff(userId)
           }
+        }
 
-          // Unknown command
-          // replyText = "請重試"
+        if (replyText === `👋 嗨! 您的 ID 是 ${userId}`) {
+          return
         }
 
         await client.replyMessage({
