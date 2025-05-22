@@ -8,7 +8,7 @@ const client = new line.messagingApi.MessagingApiClient({
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end('Method Not Allowed')
 
-  const { userId, action, name, remarks } = req.body
+  const { userId, action, name } = req.body
 
   if (!userId) return res.status(400).json({ error: '缺少 userId' })
 
