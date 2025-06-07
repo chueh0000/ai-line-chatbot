@@ -12,7 +12,6 @@ export default function CallbackPage() {
       try {
         const params = new URLSearchParams(window.location.search)
         const code = params.get('code')
-        const state = params.get('state')
 
         if (!code) {
           setError('沒有取得授權碼')
@@ -40,7 +39,7 @@ export default function CallbackPage() {
 
         // 導向註冊頁
         router.push('/register')
-      } catch (e) {
+      } catch {
         setError('發生錯誤')
       }
     }
