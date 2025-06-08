@@ -58,26 +58,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
           // TODO: You can handle commands here (e.g. /summary, /chart, etc.)
 
-          if (command === '註冊') {
-            if (!args[0] || !args[1] || !args[2]) {
-              await client.replyMessage({
-                replyToken: event.replyToken!,
-                messages: [{
-                  type: 'text',
-                  text: '請提供完整的註冊資訊：/註冊 關係 姓名 住民姓名',
-                }],
-              })
-              return
-            }
-            replyText = `${args[1]} 您好～ 已註冊成功！您是 ${args[2]} 的 ${args[0]}，您的 ID 是 ${userId}`
-          }
-
           if (command === '照護紀錄') {
             const message: line.FlexMessage = buildFlexMessage(
                 '點此查看詳細照護紀錄',
                 buildResidentBubble({
                   id: '12345',
-                  date: '2025-05-23',
+                  date: '2025-06-09',
                   imageUrl: 'https://stickershop.line-scdn.net/stickershop/v1/product/25219285/LINEStorePC/main.png?v=1',
                   name: '陳爺爺',
                   summary: '午睡充足，進食八分，無不適感。',

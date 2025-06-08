@@ -80,8 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         messages: [
           {
             type: 'text',
-            text: `親愛的家屬您好：\n我們已收到您於近日提出針對長輩「協助飲食/補充營養品」的需求。
-照護團隊將從今天開始，每日晚餐時間協助陳爺爺補充營養品，並持續觀察爺爺的胃口是否有好轉情形，請您不必太過擔心。謝謝您，祝您順心！`
+            text: `親愛的家屬您好：\n我們已收到您於近日提出的需求，請您不必太過擔心。謝謝您，祝您順心！`
           }
         ]
       })
