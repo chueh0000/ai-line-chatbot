@@ -1,5 +1,9 @@
-## Usage
+## About
+This is a group project of 2025 Engineering Design and Implementation for Sustainable Development at National Taiwan University.
 
+[slides](https://www.canva.com/design/DAGpxf9cRcI/KBdA55DYxsqOu8IxransFA/view?utm_content=DAGpxf9cRcI&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h9f68120d34)
+
+## Usage
 scan qrcode to add the line chatbot as friend
 
 ![line qrcode](qrcode_line.me.png)
