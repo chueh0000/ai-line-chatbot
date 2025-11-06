@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (parsed) {
         //   const { command, args } = parsed
-          const { command, args } = parsed
+          const { command } = parsed
 
           // TODO: You can handle commands here (e.g. /summary, /chart, etc.)
 
