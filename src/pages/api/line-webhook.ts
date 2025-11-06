@@ -54,6 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         let replyText = `👋 嗨! 您的 ID 是 ${userId}`
 
         if (parsed) {
+        //   const { command, args } = parsed
           const { command, args } = parsed
 
           // TODO: You can handle commands here (e.g. /summary, /chart, etc.)
