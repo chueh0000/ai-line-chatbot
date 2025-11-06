@@ -102,26 +102,85 @@ export async function fetchResidentDataWithTrend(id: string, targetDate: string)
     .filter(row => row[0]) // 確保有日期
     .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
 
-  // 找出選擇日期的 index
-  const dateIndex = sortedRows.findIndex(row => row[0] === targetDate.replace(/-/g, '/'))
-  if (dateIndex === -1) throw new Error('找不到指定日期')
+  const normalizedTarget = targetDate.replace(/-/g, '/')
+  let dateIndex = sortedRows.findIndex(row => row[0] === normalizedTarget)
+  let exactMatch = true
 
-  // 往前找 6 天，共 7 筆
+  // If exact date not found, fallback to nearest earlier date (or next available if none earlier)
+  if (dateIndex === -1) {
+    exactMatch = false
+    const targetTime = new Date(normalizedTarget).getTime()
+    const times = sortedRows.map(r => new Date(r[0]).getTime())
+
+    // prefer the latest date strictly before targetTime
+    let prevIndex = -1
+    for (let i = 0; i < times.length; i++) {
+      if (times[i] < targetTime) prevIndex = i
+    }
+
+    if (prevIndex !== -1) {
+      dateIndex = prevIndex
+    } else {
+      // if no earlier date, pick the earliest date after targetTime
+      const nextIndex = times.findIndex(t => t > targetTime)
+      if (nextIndex !== -1) {
+        dateIndex = nextIndex
+      } else {
+        // no rows at all or cannot find any date to use
+        throw new Error('找不到指定日期或可用的替代日期')
+      }
+    }
+  }
+
+  // 往前找 6 天，共 7 筆（基於已選定的 dateIndex）
   const recentRows = sortedRows.slice(Math.max(0, dateIndex - 6), dateIndex + 1)
 
   const parseRow = (row: string[]) => ({
     date: row[0],
-    temperature: parseFloat(row[nameIndex]),
-    pulse: parseInt(row[nameIndex + 1]),
-    respiration: parseInt(row[nameIndex + 2]),
-    systolic: parseInt((row[nameIndex + 3] || '').split('/')[0] || '0'),
-    diastolic: parseInt((row[nameIndex + 3] || '').split('/')[1] || '0'),
-    spo2: parseInt(row[nameIndex + 4]),
-    bloodSugar: parseFloat(row[nameIndex + 5]),
+    temperature: (() => {
+      const v = parseFloat(row[nameIndex])
+      return isNaN(v) ? undefined : v
+    })(),
+    pulse: (() => {
+      const v = parseInt(row[nameIndex + 1])
+      return isNaN(v) ? undefined : v
+    })(),
+    respiration: (() => {
+      const v = parseInt(row[nameIndex + 2])
+      return isNaN(v) ? undefined : v
+    })(),
+    systolic: (() => {
+      const bp = (row[nameIndex + 3] || '')
+      const s = bp.split('/')[0] || ''
+      const v = parseInt(s)
+      return isNaN(v) ? undefined : v
+    })(),
+    diastolic: (() => {
+      const bp = (row[nameIndex + 3] || '')
+      const d = bp.split('/')[1] || ''
+      const v = parseInt(d)
+      return isNaN(v) ? undefined : v
+    })(),
+    spo2: (() => {
+      const v = parseInt(row[nameIndex + 4])
+      return isNaN(v) ? undefined : v
+    })(),
+    bloodSugar: (() => {
+      const v = parseFloat(row[nameIndex + 5])
+      return isNaN(v) ? undefined : v
+    })(),
   })
 
   const trend = recentRows.map(parseRow)
-  const singleDayData = parseRow(rows[dateIndex])
+  // singleDayData should use the chosen (possibly fallback) sortedRows[dateIndex]
+  const singleDayData = parseRow(sortedRows[dateIndex])
 
-  return { name: residentName, singleDayData, trend }
+  // Include extra metadata so the caller can show a fallback notice if needed
+  return {
+    name: residentName,
+    singleDayData,
+    trend,
+    dateUsed: sortedRows[dateIndex][0], // the actual date string used from the sheet (YYYY/MM/DD)
+    exactDateMatch: exactMatch,
+  }
 }
